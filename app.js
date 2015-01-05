@@ -1,17 +1,13 @@
-var io = require('socket.io')(8000),
-  fs = require('fs'),
-  sys = require('sys'),
+var fs = require('fs'),
   FfmpegCommand = require('fluent-ffmpeg'),
   command = new FfmpegCommand(),
   frame = 0,
   config = require('config.json')('./config/default.json'),
-  shortId = require('shortid'),
-  qr = require('qr-image');
+  io = require('socket.io')(config.socketio.port),
+  
 
 io.on('connection', function(socket) {
-
   console.log('some client connect...');
-
   socket
     .on('frame', function(img) {
       if (recording) {
@@ -47,13 +43,6 @@ var makeMovie = function() {
     .fps(60)
     .videoCodec('libx264')
     .output('outputfile.mp4').on('end', function() {
-      var shortner = shortId.generate(),
-        shortURI = 'https://headoo.com/qr/' + shortner,
-        qr_png = qr.image(shortURI, {
-          type: 'png'
-        });
-      qr_png.pipe(require('fs').createWriteStream('./qrCode/' + shortner + '.png'));
-      console.log('The short url is : ' + shortURI);
       console.log('Finished processing');
     })
     .run();
