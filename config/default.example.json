@@ -1,8 +1,8 @@
 {
-  "socketio":{
+  "server":{
     "port":3002
   },
   "timer":{
-    "duration":10
+    "duration":15000
   }
 }
