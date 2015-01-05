@@ -14,8 +14,6 @@
     "config.json": "0.0.3",
     "e": "0.0.4",
     "fluent-ffmpeg": "^2.0.0-rc3",
-    "nodemailer": "^1.3.0",
-    "nodemailer-smtp-transport": "^0.1.13",
     "qr-image": "^3.0.0",
     "shortid": "^2.1.3",
     "socket.io": "^1.2.1",

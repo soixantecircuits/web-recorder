@@ -3,11 +3,8 @@ var io = require('socket.io')(8000),
   sys = require('sys'),
   FfmpegCommand = require('fluent-ffmpeg'),
   command = new FfmpegCommand(),
-  nodemailer = require('nodemailer'),
-  smtpTransport = require('nodemailer-smtp-transport'),
   frame = 0,
   config = require('config.json')('./config/default.json'),
-  transporter = nodemailer.createTransport(smtpTransport(config.Mailer)),
   shortId = require('shortid'),
   qr = require('qr-image');
 
@@ -58,22 +55,6 @@ var makeMovie = function() {
       qr_png.pipe(require('fs').createWriteStream('./qrCode/' + shortner + '.png'));
       console.log('The short url is : ' + shortURI);
       console.log('Finished processing');
-      /*transporter.sendMail({
-        from: 'soixantecircuits@headoo.net',
-        to: 'gabriel@soixantecircuits.fr',
-        subject: shortner,
-        text: 'hello world!\nuid: '+ shortner,
-        attachments: [{ // stream as an attachment
-          filename: 'video.mp4',
-          content: fs.createReadStream('outputfile.mp4')
-        }]
-      }, function(error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Message sent: ' + info.response);
-        }
-      });*/
     })
     .run();
 }
