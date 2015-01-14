@@ -2,7 +2,7 @@
 
 var fs = require('fs'),
   FfmpegCommand = require('fluent-ffmpeg'),
-  command = new FfmpegCommand(),
+  storage = require('node-persist'),
   frame = 0,
   config = require('config.json')('./config/default.json'),
   Stopwatch = require('timer-stopwatch'),
@@ -10,11 +10,26 @@ var fs = require('fs'),
   recording = false,
   io,
   totalDuration = config.timer.duration,
+  threadNumber = config.ffmpeg.threadNumber || 0,
+  extension = config.ffmpeg.extension || 'mp4',
+  separator = config.ffmpeg.separator || '_',
+  fileName = config.ffmpeg.fileName || 'rec',
+  path = config.ffmpeg.savePath || './',
+  duration = config.ffmpeg.duration || '00:15',
+  fps = config.ffmpeg.fps || '25',
+  counter = 0,
+  os = require('os'),
   app = {};
+
+//TODO 
+//Add path normalization
+
+
+storage.initSync();
+counter = (storage.getItem('counter')) ? storage.getItem('counter') : 0;
 
 var initTimerHandler = function() {
   timer.on('time', function(time) {
-    console.log(time.ms); // number of milliseconds past (or remaining);
     io.emit('time', {
       time: time.ms,
       duration: totalDuration
@@ -24,7 +39,6 @@ var initTimerHandler = function() {
   // Fires when the timer is done
   timer.on('done', function() {
     console.log('Timer is complete');
-    makeMovie();
     stop();
     io.emit('stop', 'timer done');
   });
@@ -55,26 +69,15 @@ var initSocketioServer = function() {
   io.on('connection', function(socket) {
     console.log('some client connect...');
     socket
-      .on('frame', function(img) {
-        if (recording) {
-          saveImage(img);
-        }
-      })
       .on('start', function() {
         recording = true;
         timer.start();
+        makeMovie();
       })
       .on('stop', function() {
         stop();
       });
   });
-}
-
-var saveImage = function(img) {
-  console.log("Saving...")
-  var buf = new Buffer(img, 'base64');
-  fs.writeFile('./img/image_' + frame + '.png', buf);
-  frame++;
 }
 
 var stop = function() {
@@ -84,15 +87,43 @@ var stop = function() {
   timer.reset();
 }
 
+//ffmpeg -y -f x11grab -r 25 -s 1920x1080 -i :0.0 -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
+//fmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 var makeMovie = function() {
-  FfmpegCommand()
-    .addInput('./img/image_%d.png')
-    .inputFPS(60)
-    .fps(60)
+    var inputFormat = {
+      'linux':'x11grab',
+      'win32':'avfoundation',
+      'win64':'avfoundation',
+      'darwin':'avfoundation'
+    },
+    inputOption = {
+      'linux':['-s 1920x1080'],
+      'win32':[],
+      'win64':[],
+      'darwin':[]
+    };
+    
+    console.log(inputFormat[os.platform()]);
+
+    var movieRec = FfmpegCommand('0') 
+    .inputFormat(inputFormat[os.platform()])
+    .format(extension)
+    .fps(fps)
     .videoCodec('libx264')
-    .output('outputfile.mp4')
+    .duration(duration);
+    if(inputOption[os.platform()].length > 0){
+      movieRec.inputOption(inputOption[os.platform()])
+    }
+    movieRec.outputOptions([
+      '-preset ultrafast',
+      '-threads '+threadNumber
+    ])
+    .addInput('./soundtrack.mp3')
+    .save(path+fileName+separator+counter+'.'+extension)
     .on('end', function(data) {
       console.log('Finished processing: ', data);
+      counter++;
+      storage.setItem('counter', counter);
       io.emit('success', {
         msg:'Video saved'
       });
@@ -102,8 +133,7 @@ var makeMovie = function() {
       io.emit('error', {
         msg:'Video has not been saved'
       });
-    })
-    .run();
+    });
 }
 
 // Output

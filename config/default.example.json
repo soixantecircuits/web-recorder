@@ -4,5 +4,14 @@
   },
   "timer":{
     "duration":15000
+  },
+  "ffmpeg" : {
+    "threadNumber" : "0",
+    "extension" : "mp4",
+    "fileName" : "record",
+    "separator" : "_",
+    "savePath" : "./",
+    "duration" : "00:15",
+    "fps":"25"
   }
 }

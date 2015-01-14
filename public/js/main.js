@@ -9,18 +9,20 @@ var duration = 10000000000000;
 
 $(document).on('click', '#button', function(e) {
   var $this = $(this);
-  $this.addClass('active');
-  setTimeout(function() {
-    $this.removeClass('active');
-    $this.toggleClass('record');
-    if ($this.hasClass('record')) {
-      $('#label').text('Stop');
-      socket.emit('start', 'go');
-    } else {
-      $('#label').text('Record');
-      socket.emit('stop', 'go');
-    }
-  }, 250);
+  if (!$this.hasClass('wait')) {
+    $this.addClass('active');
+    setTimeout(function() {
+      $this.removeClass('active');
+      $this.toggleClass('record');
+      if ($this.hasClass('record')) {
+        $('#label').text('Stop');
+        socket.emit('start', 'go');
+      } else {
+        $('#label').text('Record');
+        socket.emit('stop', 'go');
+      }
+    }, 250);
+  }
 });
 
 socket = io(':3002');
