@@ -2,8 +2,8 @@ document.addEventListener("touchstart", function() {}, true);
 
 Messenger.options = {
   extraClasses: 'messenger-on-top',
-  parentLocations: ['main'],
-  theme: 'flat'
+  parentLocations: ['.main'],
+  theme: 'block'
 };
 var duration = 10000000000000;
 
@@ -29,7 +29,7 @@ socket
   .on('connect', function() {
     console.log('connected');
     Messenger().post({
-      message: 'We are connected',
+      message: '<span>Your device is connected to the internet.',
       type: 'success',
       id: 'info',
       hideAfter: duration
@@ -39,7 +39,7 @@ socket
   .on('disconnect', function() {
     console.log('We\'ve been disconnected');
     Messenger().post({
-      message: 'We\'ve been disconnected',
+      message: '<span>Your device losts its internet connection.</span>',
       type: 'error',
       id: 'info',
       hideAfter: duration
@@ -51,7 +51,7 @@ socket
   })
   .on('reconnect', function(nbtry) {
     Messenger().post({
-      message: 'Successfull reconnection',
+      message: '<span>Successfull reconnection.</span>',
       type: 'info',
       id: 'info',
       hideAfter: duration
@@ -62,8 +62,8 @@ socket
   .on('reconnecting', function(nbtry) {
     console.log('Trying to reconnect.');
     Messenger().post({
-      message: 'Trying to reconnect...',
-      type: 'error',
+      message: '<span>Attempting to reconnect...</span></span><span class="loader">Reconnect</span>',
+      type: 'warning',
       id: 'info',
       hideAfter: duration
     });
