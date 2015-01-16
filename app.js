@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs'),
-  FfmpegCommand = require('fluent-ffmpeg'),
+  ffmpegCommand = require('fluent-ffmpeg'),
   storage = require('node-persist'),
   frame = 0,
   config = require('config.json')('./config/default.json'),
@@ -18,7 +18,25 @@ var fs = require('fs'),
   duration = config.ffmpeg.duration || '00:15',
   fps = config.ffmpeg.fps || '25',
   counter = 0,
-  os = require('os'),
+  platform = require('os').platform(),
+  inputFormat = {
+    'linux':'x11grab',
+    'win32':'avfoundation',
+    'win64':'avfoundation',
+    'darwin':'avfoundation'
+  },
+  inputOption = {
+    'linux':['-s 1920x1080'],
+    'win32':[],
+    'win64':[],
+    'darwin':[]
+  },
+  fileNameInput = {
+    'linux':':0',
+    'win32':'',
+    'win64':'',
+    'darwin':'0'
+  },
   app = {};
 
 //TODO 
@@ -90,35 +108,24 @@ var stop = function() {
 //ffmpeg -y -f x11grab -r 25 -s 1920x1080 -i :0.0 -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 //fmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 var makeMovie = function() {
-    var inputFormat = {
-      'linux':'x11grab',
-      'win32':'avfoundation',
-      'win64':'avfoundation',
-      'darwin':'avfoundation'
-    },
-    inputOption = {
-      'linux':['-s 1920x1080'],
-      'win32':[],
-      'win64':[],
-      'darwin':[]
-    };
+   
     
-    console.log(inputFormat[os.platform()]);
+    console.log(inputFormat[platform]);
 
-    var movieRec = FfmpegCommand('0') 
-    .inputFormat(inputFormat[os.platform()])
+    var movieRec = ffmpegCommand(fileNameInput[platform]) 
+    .inputFormat(inputFormat[platform])
     .format(extension)
     .fps(fps)
     .videoCodec('libx264')
     .duration(duration);
-    if(inputOption[os.platform()].length > 0){
-      movieRec.inputOption(inputOption[os.platform()])
+    if(inputOption[platform].length > 0){
+      movieRec.inputOption(inputOption[platform])
     }
     movieRec.outputOptions([
       '-preset ultrafast',
       '-threads '+threadNumber
     ])
-    .addInput('./soundtrack.mp3')
+    //.addInput('./soundtrack.mp3')
     .save(path+fileName+separator+counter+'.'+extension)
     .on('end', function(data) {
       console.log('Finished processing: ', data);
