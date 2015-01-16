@@ -8,6 +8,8 @@ body{
   margin:0;
   padding:0;
   font-family: arial;
+  overflow: hidden;
+  font-family: 'Lato-Reg';
 }
 header {
   text-align: center;
@@ -21,29 +23,51 @@ h1{
 h2{
   background: red;
   color:#fff;
-  margin-bottom:0px; 
+  margin-bottom:0px;
 }
 
-main{
+.header-bg {
+  width: 100%;
+  height: 115px;
+  background: url('../images/blur-bg.png') center no-repeat;
+  background-size: cover;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  background: url('../images/client-logo.png') center no-repeat;
+}
+
+.main{
   width:100%;
   height: 100%;
   text-align: center;
   margin: 0px;
   padding: 0px;
+  background: #E4E4E4;
 }
 
 .socle {
   width: 400px;
+  height: 300px;
   margin: auto;
-  position: absolute;
+  position: relative;
   left: 0;
   right: 0;
-  top: 0;
+  top: 100px;
   bottom: 0;
-  height: 300px;
   background: #fff;
   box-shadow: 0px 0px 15px #ccc;
   vertical-align: middle;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.socle #label {
+  font-family: 'Lato-Bol';
+  position: relative;
+  top: 120px;
 }
 
 #button {
@@ -53,7 +77,9 @@ main{
   border-radius: 100%;
   box-sizing: border-box;
   background: rgba(186, 28, 29, 1);
-  margin: 85px auto 30px auto;
+  margin: 0 auto;
+  position: relative;
+  top: 85px;
   cursor:pointer;
   transition: all 200ms ease;
   -webkit-transition: all 200ms ease;
@@ -88,19 +114,24 @@ message{
   display:block;
 }
 
+.messenger-message-inner {
+  text-align: left;
+  margin-left: 5%;
+}
+
 .pack {
   bottom: 0px;
-  position: absolute;
+  position: relative;
   left: 0;
   right: 0;
-  margin-bottom: 100px;
+  top: 140px;
   text-align: center;
-  width: 333px;
-  height: 30px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 287px;
+  height: 50px;
+  line-height: 35px;
+  margin: auto;
   padding-top: 15px;
-  background: #eee;
+  background: #d3d3d3;
   border-radius: 3px;
 }
 
@@ -111,4 +142,108 @@ message{
   display: inline-block;
   margin-bottom: 4px;
   margin-right: 12px;
+}
+
+ul.messenger.messenger-theme-block .messenger-message{
+  border: none;
+}
+ul.messenger.messenger-theme-block .messenger-message {
+  padding: 0;
+  height: 50px;
+}
+.messenger-message-inner span:first-child{
+  padding: 1em;
+  display: inline-block;
+}
+.loader {
+  display: inline-block;
+  height: 100%;
+  font-size: 15px;
+  margin-left: 50px;
+  line-height: 53px;
+  padding-left: 20px;
+  background: #C09853;
+  color: #fcf8e3;
+  position: relative;
+  text-shadow: none;
+  font-family: 'Lato-Bol';
+}
+.loader:after{
+  content: '';
+  display: inline-block;
+  position: relative;
+  right: -25px;
+  text-indent: -9999em;
+  margin-left: 10px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #C09853;
+  border-right: none;
+  border-top: none;
+  border-radius: 50%;
+  background: transparent;
+  -webkit-animation: load 1.4s infinite linear;
+  animation: load 1.4s infinite linear;
+
+}
+@-webkit-keyframes load {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@font-face{
+  font-family: 'Lato-BlaIta';
+  src: url('../fonts/lato/Lato-BlaIta.ttf');
+}
+@font-face{
+  font-family: 'Lato-Bol';
+  src: url('../fonts/lato/Lato-Bol.ttf');
+}
+@font-face{
+  font-family: 'Lato-LigIta';
+  src: url('../fonts/lato/Lato-LigIta.ttf');
+}
+@font-face{
+  font-family: 'Lato-Reg';
+  src: url('../fonts/lato/Lato-Reg.ttf');
+}
+@font-face{
+  font-family: 'Lato-Bla';
+  src: url('../fonts/lato/Lato-Bla.ttf');
+}
+@font-face{
+  font-family: 'Lato-HaiIta';
+  src: url('../fonts/lato/Lato-HaiIta.ttf');
+}
+@font-face{
+  font-family: 'Lato-Lig';
+  src: url('../fonts/lato/Lato-Lig.ttf');
+}
+@font-face{
+  font-family: 'Lato-BolIta';
+  src: url('../fonts/lato/Lato-BolIta.ttf');
+}
+@font-face{
+  font-family: 'Lato-Hai';
+  src: url('../fonts/lato/Lato-Hai.ttf');
+}
+@font-face{
+  font-family: 'Lato-RegIta';
+  src: url('../fonts/lato/Lato-RegIta.ttf');
 }

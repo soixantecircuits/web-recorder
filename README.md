@@ -12,6 +12,7 @@ On OsX
 `brew install ffmpeg`
 
 On Linux
+`sudo add-apt-repository ppa:jon-severinsson/ffmpeg && sudo apt-get update -qq`
 `sudo apt-get install ffmpeg`
 
 On Windows
