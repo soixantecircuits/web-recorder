@@ -11,6 +11,7 @@
     "fileName" : "record",
     "separator" : "_",
     "savePath" : "./",
+    "destinationPath" : "./bob",
     "duration" : "00:15",
     "fps":"25"
   }
