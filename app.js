@@ -14,11 +14,13 @@ var fs = require('fs'),
   extension = config.ffmpeg.extension || 'mp4',
   separator = config.ffmpeg.separator || '_',
   fileName = config.ffmpeg.fileName || 'rec',
-  path = config.ffmpeg.savePath || './',
+  savePath = config.ffmpeg.savePath || './',
+  destinationPath = config.ffmpeg.destinationPath || './',
   duration = config.ffmpeg.duration || '00:15',
   fps = config.ffmpeg.fps || '25',
   counter = 0,
   os = require('os'),
+  pathHelper = require('path'),
   app = {};
 
 //TODO 
@@ -104,6 +106,12 @@ var makeMovie = function() {
     };
     
     console.log(inputFormat[os.platform()]);
+    var finalname = fileName+separator+counter+'.'+extension;
+    var fullSavePath = pathHelper.join(savePath, finalname);
+    var newPath = pathHelper.join(destinationPath, finalname);
+
+    console.log(fullSavePath);
+    console.log(newPath);
 
     var movieRec = FfmpegCommand('0') 
     .inputFormat(inputFormat[os.platform()])
@@ -119,13 +127,18 @@ var makeMovie = function() {
       '-threads '+threadNumber
     ])
     .addInput('./soundtrack.mp3')
-    .save(path+fileName+separator+counter+'.'+extension)
+    .save(fullSavePath)
     .on('end', function(data) {
       console.log('Finished processing: ', data);
       counter++;
       storage.setItem('counter', counter);
-      io.emit('success', {
-        msg:'Video saved'
+      fs.rename(fullSavePath, newPath, function(err){
+        if(err){
+          console.log('error moving: '+err);
+        }
+        io.emit('success', {
+          msg:'Video saved'
+        });
       });
     })
     .on('error', function(err) {
