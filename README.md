@@ -36,3 +36,4 @@ Dont use last version, not stable.
 
 http://wiki.oz9aec.net/index.php/High_quality_screen_capture_with_Ffmpeg (watch out lossless_ultrafast does not exist anymore use x264 --help to know more)
 
+http://stackoverflow.com/questions/9095918/ffmpeg-creating-thumbnail-for-video-file
