@@ -1,12 +1,14 @@
 'use strict';
-
+//
 var fs = require('fs'),
   ffmpegCommand = require('fluent-ffmpeg'),
   storage = require('node-persist'),
   frame = 0,
   config = require('config.json')('./config/default.json'),
   Stopwatch = require('timer-stopwatch'),
-  timer = new Stopwatch(config.timer.duration),
+  timer = new Stopwatch(config.timer.duration, {
+    almostDoneMS: 2000,
+  }),
   recording = false,
   io,
   totalDuration = config.timer.duration,
@@ -21,25 +23,40 @@ var fs = require('fs'),
   counter = 0,
   platform = require('os').platform(),
   inputFormat = {
-    'linux':'x11grab',
-    'win32':'avfoundation',
-    'win64':'avfoundation',
-    'darwin':'avfoundation'
+    'linux': 'x11grab',
+    'win32': 'avfoundation',
+    'win64': 'avfoundation',
+    'darwin': 'avfoundation'
   },
   inputOption = {
-    'linux':['-s 1920x1080'],
-    'win32':[],
-    'win64':[],
-    'darwin':[]
+    'linux': ['-s 1920x1080'],
+    'win32': [],
+    'win64': [],
+    'darwin': [
+      '-deinterlace',
+    ]
+  },
+  outputOptions = {
+    'linux': ['-preset ultrafast',
+      '-threads ' + threadNumber,
+      '-strict experimental'
+    ],
+    'win32': [],
+    'win64': [],
+    'darwin': ['-preset ultrafast',
+      '-threads ' + threadNumber,
+      '-strict experimental'
+    ]
   },
   fileNameInput = {
-    'linux':':0',
-    'win32':'',
-    'win64':'',
-    'darwin':'0'
+    'linux': ':0',
+    'win32': '',
+    'win64': '',
+    'darwin': '0'
   },
   os = require('os'),
   pathHelper = require('path'),
+  movieRec = {},
   app = {};
 
 //TODO 
@@ -61,11 +78,16 @@ var initTimerHandler = function() {
   timer.on('done', function() {
     console.log('Timer is complete');
     stop();
-    io.emit('stop', 'timer done');
+    io.emit('stop', {
+      msg: 'Finished !'
+    });
   });
 
   // Fires when the timer is almost complete - default is 10 seconds remaining. Change with 'almostDoneMS' option
   timer.on('almostdone', function() {
+    io.emit('message', {
+      msg: 'Almost finished !'
+    });
     console.log('Timer is almost complete');
   });
 }
@@ -96,6 +118,10 @@ var initSocketioServer = function() {
         makeMovie();
       })
       .on('stop', function() {
+        io.emit('message', {
+          msg: 'Video cancel...'
+        });
+        movieRec.kill();
         stop();
       });
   });
@@ -110,48 +136,54 @@ var stop = function() {
 
 //ffmpeg -y -f x11grab -r 25 -s 1920x1080 -i :0.0 -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 //fmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
+//"/Users/gabrielstuff/Library/Application Support/Adapter/ffmpeg" '-i' '/Volumes/Macintosh HD/Users/gabrielstuff/Sources/node/socketio-record/bob/record_9.mp4' '-vcodec' 'mpeg4' '-b:v' '855k' '-qscale:v' '10' '-acodec' 'aac' '-ac' '2' '-async' '1' '-strict' 'experimental' '/Volumes/Macintosh HD/Users/gabrielstuff/Sources/node/socketio-record/bob/record_9(4).mp4' '-threads' '0'
 var makeMovie = function() {
-   
-    
-    console.log(inputFormat[platform]);
-    var finalname = fileName+separator+counter+'.'+extension;
-    var fullSavePath = pathHelper.join(savePath, finalname);
-    var newPath = pathHelper.join(destinationPath, finalname);
 
-    console.log(fullSavePath);
-    console.log(newPath);
-    var movieRec = ffmpegCommand(fileNameInput[platform]) 
+
+  console.log(inputFormat[platform]);
+  var finalname = fileName + separator + counter + '.' + extension;
+  var fullSavePath = pathHelper.join(savePath, finalname);
+  var newPath = pathHelper.join(destinationPath, finalname);
+
+  console.log(fullSavePath);
+  console.log(newPath);
+  movieRec = ffmpegCommand(fileNameInput[platform])
     .inputFormat(inputFormat[platform])
     .format(extension)
     .fps(fps)
-    .videoCodec('libx264')
+    .videoCodec('libx264') //should try mpeg4
     .duration(duration);
-    if(inputOption[platform].length > 0){
-      movieRec.inputOption(inputOption[platform])
-    }
-    movieRec.outputOptions([
-      '-preset ultrafast',
-      '-threads '+threadNumber
-    ])
+  if (inputOption[platform].length > 0) {
+    movieRec.inputOption(inputOption[platform])
+  }
+  movieRec.outputOptions(outputOptions[platform])
     //.addInput('./soundtrack.mp3')
     .save(fullSavePath)
     .on('end', function(data) {
       console.log('Finished processing: ', data);
       counter++;
       storage.setItem('counter', counter);
-      fs.rename(fullSavePath, newPath, function(err){
-        if(err){
-          console.log('error moving: '+err);
+      fs.rename(fullSavePath, newPath, function(err) {
+        if (err) {
+          console.log('error moving: ' + err);
         }
         io.emit('success', {
-          msg:'Video saved'
+          msg: 'Video processing ...'
         });
       });
     })
     .on('error', function(err) {
       console.error(err);
+      fs.unlink(pathHelper.join(savePath, finalname), function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('successfully deleted ' + pathHelper.join(savePath, finalname));
+        }
+      });
+
       io.emit('error', {
-        msg:'Video has not been saved'
+        msg: 'Video has not been saved'
       });
     });
 }

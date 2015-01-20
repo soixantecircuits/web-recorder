@@ -90,7 +90,7 @@ h2{
 }
 
 .wait{
-  -webkit-filter: grayscale(100%);
+  -webkit-filter: grayscale(50%);
   opacity:50%;
 }
 

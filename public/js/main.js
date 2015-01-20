@@ -5,24 +5,29 @@ Messenger.options = {
   parentLocations: ['.main'],
   theme: 'block'
 };
+//little hack
 var duration = 10000000000000;
 
-$(document).on('click', '#button', function(e) {
-  var $this = $(this);
-  if (!$this.hasClass('wait')) {
-    $this.addClass('active');
-    setTimeout(function() {
-      $this.removeClass('active');
-      $this.toggleClass('record');
-      if ($this.hasClass('record')) {
-        $('#label').text('Stop');
-        socket.emit('start', 'go');
-      } else {
-        $('#label').text('Record');
-        socket.emit('stop', 'go');
-      }
-    }, 250);
-  }
+$(function() {
+  FastClick.attach(document.body);
+  $(document).on('click', '#button', function(e) {
+    var $this = $(this);
+    if (!$this.hasClass('wait')) {
+      $this.addClass('active');
+      setTimeout(function() {
+        $this.removeClass('active');
+        $this.toggleClass('record');
+        if ($this.hasClass('record')) {
+          $('#label').text('Stop');
+          socket.emit('start', 'go');
+        } else {
+          $('#label').text('Record');
+          socket.emit('stop', 'go');
+        }
+      }, 250);
+    }
+  });
+
 });
 
 socket = io(':3002');
@@ -71,7 +76,7 @@ socket
     });
   })
   .on('time', function(data) {
-    console.log(data);
+    //console.log(data);
     var percent = 100 - (data.time / data.duration) * 100;
     $('.bar').css({
       width: percent + '%'
@@ -82,6 +87,7 @@ socket
     console.log('finished: ', data);
     $('#label').text('Record').addClass('wait');
     $('#button').removeClass('record').addClass('wait');
+    $('message').addClass('success').text(data.msg);
   })
   .on('error', function(data) {
     console.log(data);
@@ -89,7 +95,13 @@ socket
   })
   .on('success', function(data) {
     $('message').addClass('success').text(data.msg);
+    setTimeout(function(){
+      $('message').addClass('success').text('Video saved !');
+    }, 1000);
     setTimeout(clearMessage, 3000);
+  })
+  .on('message', function(data){
+    $('message').text(data.msg);
   });
 
 var clearMessage = function() {
