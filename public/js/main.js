@@ -10,6 +10,13 @@ var duration = 10000000000000;
 
 $(function() {
   FastClick.attach(document.body);
+  $('#button')
+  .on('touchstart', function(){
+    $(this).addClass('touchstart');
+   })
+  .on('touchend', function(){
+    $(this).removeClass('touchstart');
+  });
   $(document).on('click', '#button', function(e) {
     var $this = $(this);
     if (!$this.hasClass('wait')) {
@@ -88,10 +95,12 @@ socket
     $('#label').text('Record').addClass('wait');
     $('#button').removeClass('record').addClass('wait');
     $('message').addClass('success').text(data.msg);
+    setTimeout(clearMessage, 1000);
   })
   .on('error', function(data) {
     console.log(data);
     $('message').addClass('error').text(data.msg);
+    setTimeout(clearMessage, 1000);
   })
   .on('success', function(data) {
     $('message').addClass('success').text(data.msg);

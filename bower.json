@@ -1,0 +1,20 @@
+{
+  "name": "web-recorder",
+  "version": "0.0.0",
+  "homepage": "https://github.com/soixantecircuits/web-recorder",
+  "authors": [
+    "Emmanuel Geoffray <manuel@soixantecircuits.fr>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fastclick": "~1.0.3"
+  }
+}
