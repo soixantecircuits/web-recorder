@@ -17,6 +17,8 @@ $(document).on('click', '#button', function(e) {
       if ($this.hasClass('record')) {
         $('#label').text('Stop');
         socket.emit('start', 'go');
+        // debug
+        setInterval(function () {socket.emit('start', 'go');}, 180000);
       } else {
         $('#label').text('Record');
         socket.emit('stop', 'go');

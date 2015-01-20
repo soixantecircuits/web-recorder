@@ -110,6 +110,9 @@ var stop = function() {
 
 //ffmpeg -y -f x11grab -r 25 -s 1920x1080 -i :0.0 -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 //fmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
+
+//ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0+0,0 -vcodec libx264 -preset veryfast -crf 18 -acodec libmp3lame -ar 44100 -q:a 1 -pix_fmt yuv420p test2.mkv
+
 var makeMovie = function() {
    
     
@@ -130,8 +133,11 @@ var makeMovie = function() {
       movieRec.inputOption(inputOption[platform])
     }
     movieRec.outputOptions([
-      '-preset ultrafast',
-      '-threads '+threadNumber
+      '-preset veryfast',
+      '-crf 18',
+      '-q:a 1',
+      '-pix_fmt yuv420p',
+      //'-threads '+threadNumber
     ])
     //.addInput('./soundtrack.mp3')
     .save(fullSavePath)
