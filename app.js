@@ -10,7 +10,11 @@ var fs = require('fs'),
   recording = false,
   io,
   totalDuration = config.timer.duration,
-  app = {};
+  app = {},
+  mdns = require('mdns');
+
+var ad = mdns.createAdvertisement(mdns.tcp('http'), 5050);
+ad.start();
 
 var initTimerHandler = function() {
   timer.on('time', function(time) {
