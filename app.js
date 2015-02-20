@@ -13,7 +13,7 @@ var fs = require('fs'),
   app = {},
   mdns = require('mdns');
 
-var ad = mdns.createAdvertisement(mdns.tcp('http'), 5050);
+var ad = mdns.createAdvertisement(mdns.tcp(config.serviceName), config.server.port);
 ad.start();
 
 var initTimerHandler = function() {
@@ -65,8 +65,12 @@ var initSocketioServer = function() {
         }
       })
       .on('start', function() {
-        recording = true;
-        timer.start();
+        if(!config.remote){
+          recording = true;
+          timer.start();
+        } else {
+          io.emit('shoot');
+        }
       })
       .on('stop', function() {
         stop();

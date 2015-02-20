@@ -2,6 +2,8 @@
   "server":{
     "port":3002
   },
+  "remote": true,
+  "serviceName": "remote",
   "timer":{
     "duration":15000
   }
