@@ -3,16 +3,30 @@
 var fs = require('fs'),
   FfmpegCommand = require('fluent-ffmpeg'),
   command = new FfmpegCommand(),
-  frame = 0,
-  config = require('config.json')('./config/default.json'),
+  config = require('./config/default.json'),
   Stopwatch = require('timer-stopwatch'),
   shortId = require('shortid'),
+  express = require('express'),
+  mdns = require('mdns'),
   timer = new Stopwatch(config.timer.duration),
   recording = false,
+  frame = 0,
   io,
   totalDuration = config.timer.duration,
   app = {},
-  mdns = require('mdns');
+  options = {
+    dotfiles: 'ignore',
+    etag: false,
+    extensions: ['htm', 'html', 'css', 'js', 'png', 'jpg'],
+    index: './html/index.html',
+    maxAge: '1d',
+    redirect: false,
+    setHeaders: function(res, path, stat) {
+      res.set('x-timestamp', Date.now())
+    }
+  };
+
+
 
 var ad = mdns.createAdvertisement(mdns.tcp(config.serviceName), config.server.port);
 ad.start();
@@ -41,22 +55,20 @@ var initTimerHandler = function() {
 }
 
 var initStatiqueServer = function() {
-  var Statique = require("statique");
+  app = express();
+  app.use(express.static('public', options));
+  app.get('/config.js', function(req, res, next) {
+    next();
+  }, function(req, res, next) {
+      res.set('Content-Type', 'text/javascript');
+      res.send('var config='+JSON.stringify(config));
+    });
 
-  // Create *Le Statique* server
-  var server = new Statique({
-    root: __dirname + "/public",
-    cache: 36000
-  }).setRoutes({
-    "/": "/html/index.html"
-  });
-
-  // Create server
-  app = require('http').createServer(server.serve);
 }
 
 var initSocketioServer = function() {
-  io = require('socket.io')(app);
+  var server = require('http').Server(app);
+  io = require('socket.io')(server);
   io.on('connection', function(socket) {
     console.log('some client connect...');
     socket
@@ -66,7 +78,7 @@ var initSocketioServer = function() {
         }
       })
       .on('start', function() {
-        if(!config.remote){
+        if (!config.remote) {
           recording = true;
           timer.start();
         } else {
@@ -77,6 +89,7 @@ var initSocketioServer = function() {
         stop();
       });
   });
+  server.listen(config.server.port);
 }
 
 var saveImage = function(img) {
@@ -103,13 +116,13 @@ var makeMovie = function() {
     .on('end', function(data) {
       console.log('Finished processing: ', data);
       io.emit('success', {
-        msg:'Video saved'
+        msg: 'Video saved'
       });
     })
     .on('error', function(err) {
       console.error(err);
       io.emit('error', {
-        msg:'Video has not been saved'
+        msg: 'Video has not been saved'
       });
     })
     .run();
@@ -120,4 +133,3 @@ console.log("Listening on: http://localhost:" + config.server.port);
 initStatiqueServer();
 initSocketioServer();
 initTimerHandler();
-app.listen(config.server.port);

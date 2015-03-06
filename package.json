@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express":"4.2.0",
     "config.json": "0.0.3",
     "e": "0.0.4",
     "fluent-ffmpeg": "^2.0.0-rc3",

@@ -23,7 +23,7 @@ $(document).on('click', '#button', function(e) {
   }, 250);
 });
 
-socket = io(':3002');
+socket = io(':'+config.port);
 
 socket
   .on('connect', function() {
