@@ -7,25 +7,29 @@ Messenger.options = {
 };
 var duration = 10000000000000;
 
-$(document).on('click', '#button', function(e) {
+$(document).on('tap', '#button', function(e) {
   var $this = $(this);
   $this.addClass('active');
-  setTimeout(function() {
-    $this.removeClass('active');
+  
     $this.toggleClass('record');
     if ($this.hasClass('record')) {
       $('#label').text('Stop');
       socket.emit('start', 'go');
+      if(config.remote){
+        setTimeout(function(){
+          $this.removeClass('active');
+          $this.toggleClass('record');
+          $('#label').text('Record');
+        }, 250);
+      }
     } else {
       $('#label').text('Record');
       socket.emit('stop', 'go');
     }
-  }, 250);
+  
 });
 
-socket = io(':'+config.port);
-
-socket
+socket = io(':' + config.server.port)
   .on('connect', function() {
     console.log('connected');
     Messenger().post({
@@ -101,6 +105,9 @@ var init = function() {
   });
   $('.pack span').text('00:00:00');
   $('.wait').removeClass('wait');
+  if(config.remote){
+    $('.pack').hide();
+  }
 }
 
 var freez = function() {

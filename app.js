@@ -78,6 +78,7 @@ var initSocketioServer = function() {
         }
       })
       .on('start', function() {
+        console.log('shoot');
         if (!config.remote) {
           recording = true;
           timer.start();
