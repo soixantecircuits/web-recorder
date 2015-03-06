@@ -6,6 +6,7 @@ var fs = require('fs'),
   frame = 0,
   config = require('config.json')('./config/default.json'),
   Stopwatch = require('timer-stopwatch'),
+  shortId = require('shortid'),
   timer = new Stopwatch(config.timer.duration),
   recording = false,
   io,
@@ -69,7 +70,7 @@ var initSocketioServer = function() {
           recording = true;
           timer.start();
         } else {
-          io.emit('shoot');
+          io.emit('shoot', shortId.generate());
         }
       })
       .on('stop', function() {
