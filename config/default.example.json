@@ -6,5 +6,6 @@
   "serviceName": "remote",
   "timer":{
     "duration":15000
-  }
+  },
+  "clickInterval" : 3000
 }
