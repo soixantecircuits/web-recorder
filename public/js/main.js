@@ -20,6 +20,11 @@ $(document).on('tap', '#button', function(e) {
           $this.removeClass('active');
           $this.toggleClass('record');
           $('#label').text('Record');
+          loading();
+          setTimeout(function(){
+            $('#button').removeClass('wait');
+            $('#label').text('Record');
+          }, config.clickInterval);
         }, 250);
       }
     } else {
@@ -33,7 +38,7 @@ socket = io(':' + config.server.port)
   .on('connect', function() {
     console.log('connected');
     Messenger().post({
-      message: '<span>Your device is connected to the internet.',
+      message: '<span>Connected',
       type: 'success',
       id: 'info',
       hideAfter: duration
@@ -43,7 +48,7 @@ socket = io(':' + config.server.port)
   .on('disconnect', function() {
     console.log('We\'ve been disconnected');
     Messenger().post({
-      message: '<span>Your device losts its internet connection.</span>',
+      message: '<span>Disconnected</span>',
       type: 'error',
       id: 'info',
       hideAfter: duration
@@ -117,4 +122,9 @@ var freez = function() {
   $('.pack span').text('00:00:00');
   $('#label').text('Record').addClass('wait');
   $('#button').removeClass('record').addClass('wait');
+}
+
+var loading = function(){
+  $('#label').text('Loading').addClass('wait');
+  $('#button').addClass('wait');
 }
