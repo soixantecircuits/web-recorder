@@ -27,6 +27,7 @@ var fs = require('fs'),
   };
 
 
+shortId.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ()');
 
 var ad = mdns.createAdvertisement(mdns.tcp(config.serviceName), config.server.port);
 ad.start();
@@ -78,12 +79,13 @@ var initSocketioServer = function() {
         }
       })
       .on('start', function() {
-        console.log('shoot');
+        var short_id = shortId.generate();
+        console.log('shoot ' + short_id);
         if (!config.remote) {
           recording = true;
           timer.start();
         } else {
-          io.emit('shoot', shortId.generate());
+          io.emit('shoot', short_id);
         }
       })
       .on('stop', function() {
