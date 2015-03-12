@@ -29,3 +29,7 @@ Copy into the PATH variable
 And then :
 
 `npm install`
+
+### CLI trigger
+
+`node scripts/trigger.js`
