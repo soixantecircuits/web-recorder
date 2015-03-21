@@ -33,3 +33,8 @@ And then :
 ### CLI trigger
 
 `node scripts/trigger.js`
+
+Run
+==============
+
+`npm start`
