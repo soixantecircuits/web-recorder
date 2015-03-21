@@ -16,11 +16,11 @@ $(document).on('tap', '#button', function(e) {
       $('#label').text('Stop');
       socket.emit('start', 'go');
       if(config.remote){
+        loading();
         setTimeout(function(){
           $this.removeClass('active');
           $this.toggleClass('record');
           $('#label').text('Record');
-          loading();
           setTimeout(function(){
             $('#button').removeClass('wait');
             $('#label').text('Record');
