@@ -7,7 +7,9 @@ Messenger.options = {
 };
 var duration = 10000000000000;
 
-$(document).on('tap', '#button', function(e) {
+var triggerEl = '.main';
+
+$(document).on('tap', triggerEl, function(e) {
   var $this = $(this);
   $this.addClass('active');
   
@@ -22,7 +24,7 @@ $(document).on('tap', '#button', function(e) {
           $this.toggleClass('record');
           $('#label').text('Record');
           setTimeout(function(){
-            $('#button').removeClass('wait');
+            $(triggerEl).removeClass('wait');
             $('#label').text('Record');
           }, config.clickInterval);
         }, 250);
@@ -88,7 +90,7 @@ socket = io(':' + config.server.port)
   .on('stop', function(data) {
     console.log('finished: ', data);
     $('#label').text('Record').addClass('wait');
-    $('#button').removeClass('record').addClass('wait');
+    $(triggerEl).removeClass('record').addClass('wait');
   })
   .on('error', function(data) {
     console.log(data);
@@ -121,10 +123,10 @@ var freez = function() {
   });
   $('.pack span').text('00:00:00');
   $('#label').text('Record').addClass('wait');
-  $('#button').removeClass('record').addClass('wait');
+  $(triggerEl).removeClass('record').addClass('wait');
 }
 
 var loading = function(){
   $('#label').text('Loading').addClass('wait');
-  $('#button').addClass('wait');
+  $(triggerEl).addClass('wait');
 }

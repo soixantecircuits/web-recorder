@@ -101,6 +101,7 @@ h2{
 .wait{
   -webkit-filter: grayscale(100%);
   opacity:50%;
+  pointer-events: none;
 }
 
 #button.record {
