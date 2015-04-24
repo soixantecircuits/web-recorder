@@ -34,6 +34,9 @@ And then :
 
 `node scripts/trigger.js`
 
+Please change default.example.json to default.json
+`cp ./config/default.example.json ./config.json`
+
 Run
 ==============
 
