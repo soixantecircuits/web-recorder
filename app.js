@@ -90,6 +90,9 @@ var initSocketioServer = function() {
       })
       .on('stop', function() {
         stop();
+      })
+      .on('photoTaken', function(){
+        io.emit('photoTaken');
       });
   });
   server.listen(config.server.port);

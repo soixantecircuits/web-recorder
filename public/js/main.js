@@ -7,33 +7,26 @@ Messenger.options = {
 };
 var duration = 10000000000000;
 
-var triggerEl = '.main';
+var triggerEl = '#button';
+
+$(document).ready(function() {
+  $('.message-capture').fadeOut('400');
+});
+
 
 $(document).on('tap', triggerEl, function(e) {
   var $this = $(this);
   $this.addClass('active');
-  
-    $this.toggleClass('record');
-    if ($this.hasClass('record')) {
-      $('#label').text('Stop');
-      socket.emit('start', 'go');
-      if(config.remote){
-        loading();
-        setTimeout(function(){
-          $this.removeClass('active');
-          $this.toggleClass('record');
-          $('#label').text('Record');
-          setTimeout(function(){
-            $(triggerEl).removeClass('wait');
-            $('#label').text('Record');
-          }, config.clickInterval);
-        }, 250);
-      }
-    } else {
-      $('#label').text('Record');
-      socket.emit('stop', 'go');
-    }
-  
+  $this.toggleClass('record');
+
+  if ($this.hasClass('record')) {
+    socket.emit('start', 'go');
+    console.log('emit start');
+    $(triggerEl).addClass('wait');
+    setTimeout(function(){
+      $(triggerEl).removeClass('record');
+    }, 250);
+  }
 });
 
 socket = io(':' + config.server.port)
@@ -89,7 +82,7 @@ socket = io(':' + config.server.port)
   })
   .on('stop', function(data) {
     console.log('finished: ', data);
-    $('#label').text('Record').addClass('wait');
+    $('#label').text('Capture photo').addClass('wait');
     $(triggerEl).removeClass('record').addClass('wait');
   })
   .on('error', function(data) {
@@ -99,6 +92,15 @@ socket = io(':' + config.server.port)
   .on('success', function(data) {
     $('message').addClass('success').text(data.msg);
     setTimeout(clearMessage, 3000);
+  })
+  .on('photoTaken', function(){
+    $(triggerEl).removeClass('active');
+    $(triggerEl).removeClass('wait');
+    $('.message-capture').fadeIn(400, function() {
+      setTimeout(function(){
+        $('.message-capture').fadeOut('400');
+      }, 1500);
+    });
   });
 
 var clearMessage = function() {
@@ -121,12 +123,12 @@ var freez = function() {
   $('.bar').css({
     width: 0 + '%'
   });
-  $('.pack span').text('00:00:00');
-  $('#label').text('Record').addClass('wait');
+  // $('.pack span').text('00:00:00');
+  $('#label').text('Capture photo').addClass('wait');
   $(triggerEl).removeClass('record').addClass('wait');
 }
 
 var loading = function(){
-  $('#label').text('Loading').addClass('wait');
+  $('#label').text('Capture photo').addClass('wait');
   $(triggerEl).addClass('wait');
 }
