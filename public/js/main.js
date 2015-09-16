@@ -5,7 +5,11 @@ Messenger.options = {
   parentLocations: ['.main'],
   theme: 'block'
 };
-var duration = 10000000000000;
+var durationMessenger = {
+  connect: 4,
+  disconnect: 20*60,
+  connecting: 20*60,
+}
 
 var triggerEl = '#button';
 
@@ -33,10 +37,10 @@ socket = io(':' + config.server.port)
   .on('connect', function() {
     console.log('connected');
     Messenger().post({
-      message: '<span>Connected',
+      message: '<span>Connected</span>',
       type: 'success',
       id: 'info',
-      hideAfter: duration
+      hideAfter: durationMessenger.connect
     });
     init();
   })
@@ -46,7 +50,7 @@ socket = io(':' + config.server.port)
       message: '<span>Disconnected</span>',
       type: 'error',
       id: 'info',
-      hideAfter: duration
+      hideAfter: durationMessenger.disconnect
     });
     freez();
   })
@@ -58,7 +62,7 @@ socket = io(':' + config.server.port)
       message: '<span>Successfull reconnection.</span>',
       type: 'info',
       id: 'info',
-      hideAfter: duration
+      hideAfter: durationMessenger.connect
     });
     init();
     console.log('Successfull reconnect after ' + nbtry + ' trying.');
@@ -69,7 +73,7 @@ socket = io(':' + config.server.port)
       message: '<span>Attempting to reconnect...</span></span><span class="loader">Reconnect</span>',
       type: 'warning',
       id: 'info',
-      hideAfter: duration
+      hideAfter: durationMessenger.connecting
     });
   })
   .on('time', function(data) {
