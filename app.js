@@ -134,8 +134,40 @@ var makeMovie = function() {
     .run();
 }
 
+var initSocketioClient = function (){
+  io = require('socket.io-client')('http://' + config.client.address + ':' + config.client.port);
+  console.log('connected to socket.io server on:', config.client.address + ':' + config.client.port);
+  io
+    .on('frame', function(img) {
+      if (recording) {
+        saveImage(img);
+      }
+    })
+    .on('start', function() {
+      var short_id = shortId.generate();
+      console.log('shoot ' + short_id);
+      if (!config.remote) {
+        recording = true;
+        timer.start();
+      } else {
+        io.emit('shoot', short_id);
+      }
+    })
+    .on('stop', function() {
+      stop();
+      console.log('stopped recording');
+    })
+    .on('photoTaken', function(){
+      io.emit('photoTaken');
+    });
+}
+
 // Output
 console.log("Listening on: http://localhost:" + config.server.port);
 initStatiqueServer();
-initSocketioServer();
+if(config.isServer){
+  initSocketioServer();
+} else {
+  initSocketioClient();
+}
 initTimerHandler();
