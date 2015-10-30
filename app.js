@@ -143,7 +143,10 @@ var initSocketioClient = function (){
         saveImage(img);
       }
     })
-    .on('start', function() {
+    .on('start', function(duration) {
+      if(duration){
+        timer.reset(duration);
+      }
       var short_id = shortId.generate();
       console.log('shoot ' + short_id);
       if (!config.remote) {
