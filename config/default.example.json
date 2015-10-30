@@ -1,6 +1,11 @@
 {
+  "isServer": false,
   "server":{
     "port":3002
+  },
+  "client": {
+    "address": "10.60.60.5",
+    "port": 3000
   },
   "timer":{
     "duration":15000

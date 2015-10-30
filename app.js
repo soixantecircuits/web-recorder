@@ -11,6 +11,7 @@ var fs = require('fs'),
   }),
   recording = false,
   io,
+  shortId = require('shortid'),
   totalDuration = config.timer.duration,
   threadNumber = config.ffmpeg.threadNumber || 0,
   extension = config.ffmpeg.extension || 'mp4',
@@ -59,7 +60,7 @@ var fs = require('fs'),
   movieRec = {},
   app = {};
 
-//TODO 
+//TODO
 //Add path normalization
 
 
@@ -125,6 +126,29 @@ var initSocketioServer = function() {
         stop();
       });
   });
+}
+
+var initSocketioClient = function (){
+  io = require('socket.io-client')('http://' + config.client.address + ':' + config.client.port);
+  console.log('connected to socket.io server on:', config.client.address + ':' + config.client.port);
+  io
+    .on('frame', function(img) {
+      if (recording) {
+        saveImage(img);
+      }
+    })
+    .on('start', function() {
+      recording = true;
+      timer.start();
+      makeMovie();
+    })
+    .on('stop', function() {
+      stop();
+      console.log('stopped recording');
+    })
+    .on('photoTaken', function(){
+      io.emit('photoTaken');
+    });
 }
 
 var stop = function() {
@@ -194,6 +218,10 @@ var makeMovie = function() {
 // Output
 console.log("Listening on: http://localhost:" + config.server.port);
 initStatiqueServer();
-initSocketioServer();
+if(config.isServer){
+  initSocketioServer();
+} else {
+  initSocketioClient();
+}
 initTimerHandler();
 app.listen(config.server.port);

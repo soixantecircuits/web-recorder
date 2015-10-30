@@ -19,7 +19,7 @@
     "qr-image": "^3.0.0",
     "shortid": "^2.1.3",
     "socket.io": "^1.2.1",
-    "socket.io-client": "^1.2.1",
+    "socket.io-client": "^1.3.7",
     "statique": "^1.0.2",
     "timer-stopwatch": "^0.1.5"
   }
