@@ -37,5 +37,7 @@ qrCode/*
 npm-debug.log
 
 *.mp4
+*.avi
+*.mkv
 
 public/images/client-logo.png

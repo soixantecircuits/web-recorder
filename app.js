@@ -53,7 +53,7 @@ var fs = require('fs'),
     'linux': ':0',
     'win32': '',
     'win64': '',
-    'darwin': '0'
+    'darwin': '2'
   },
   os = require('os'),
   pathHelper = require('path'),
@@ -142,7 +142,11 @@ var initSocketioClient = function (){
       timer.start();
       makeMovie();
     })
-    .on('stop', function() {
+    .on('stop-rec', function() {
+      counter++;
+      storage.setItem('counter', counter);
+      movieRec.kill('SIGSTOP');
+      // movieRec.kill();
       stop();
       console.log('stopped recording');
     })
@@ -179,7 +183,7 @@ var makeMovie = function() {
     .format(extension)
     .fps(fps)
     .videoCodec('libx264') //should try mpeg4
-    .duration(duration);
+    // .duration(duration);
   if (inputOption[platform].length > 0) {
     movieRec.inputOption(inputOption[platform])
   }
