@@ -143,24 +143,33 @@ var initSocketioClient = function (){
       makeMovie();
     })
     .on('stop-rec', function() {
-      counter++;
-      storage.setItem('counter', counter);
       movieRec.kill('SIGSTOP');
       // movieRec.kill();
       stop();
       console.log('stopped recording');
       setTimeout(function () {
-        var finalname = fileName + separator + counter + '.' + extension;
-        var fullSavePath = pathHelper.join(savePath, finalname);
-        var newPath = pathHelper.join(destinationPath, finalname);
-        fs.rename(fullSavePath, newPath, function(err) {
-          if (err) {
-            console.log('error moving: ' + err);
-          }
-          io.emit('success', {
-            msg: 'Video processing ...'
+        var aviname = fileName + separator + counter + '.' + extension;
+        var mp4name = fileName + separator + counter + '.mp4';
+        var aviPath = pathHelper.join(destinationPath, aviname);
+        var mp4Path = pathHelper.join(destinationPath, mp4name);
+        var fullSavePath = pathHelper.join(savePath, mp4name);
+        var command = ffmpeg(aviPath)
+          .videoCodec('libx264')
+          .format('mp4')
+          .on('end', function(){
+            console.log('converted to mp4.');
+            fs.rename(fullSavePath, mp4Path, function(err) {
+              if (err) {
+                console.log('error moving: ' + err);
+              }
+              io.emit('success', {
+                msg: 'Video processing ...'
+              });
+            });
+            counter++;
+            storage.setItem('counter', counter);
           });
-        });
+
       }, 500);
     })
     .on('photoTaken', function(){
