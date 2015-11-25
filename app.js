@@ -153,7 +153,7 @@ var initSocketioClient = function (){
         var aviPath = pathHelper.join(destinationPath, aviname);
         var mp4Path = pathHelper.join(destinationPath, mp4name);
         var fullSavePath = pathHelper.join(savePath, mp4name);
-        var command = ffmpeg(aviPath)
+        var command = ffmpegCommand(aviPath)
           .videoCodec('libx264')
           .format('mp4')
           .on('end', function(){
