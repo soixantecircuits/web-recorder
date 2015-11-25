@@ -149,6 +149,19 @@ var initSocketioClient = function (){
       // movieRec.kill();
       stop();
       console.log('stopped recording');
+      setTimeout(function () {
+        var finalname = fileName + separator + counter + '.' + extension;
+        var fullSavePath = pathHelper.join(savePath, finalname);
+        var newPath = pathHelper.join(destinationPath, finalname);
+        fs.rename(fullSavePath, newPath, function(err) {
+          if (err) {
+            console.log('error moving: ' + err);
+          }
+          io.emit('success', {
+            msg: 'Video processing ...'
+          });
+        });
+      }, 500);
     })
     .on('photoTaken', function(){
       io.emit('photoTaken');
