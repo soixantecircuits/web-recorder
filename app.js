@@ -53,7 +53,7 @@ var fs = require('fs'),
     'linux': ':0',
     'win32': '',
     'win64': '',
-    'darwin': '2'
+    'darwin': '1'
   },
   os = require('os'),
   pathHelper = require('path'),
@@ -150,20 +150,31 @@ var initSocketioClient = function (){
       setTimeout(function () {
         var aviname = fileName + separator + counter + '.' + extension;
         var mp4name = fileName + separator + counter + '.mp4';
-        var aviPath = pathHelper.join(destinationPath, aviname);
-        var mp4Path = pathHelper.join(destinationPath, mp4name);
-        var fullSavePath = pathHelper.join(savePath, mp4name);
+        var aviPath = pathHelper.join(savePath, aviname);
+        var mp4Path = pathHelper.join(savePath, mp4name);
+        var fullSavePath = pathHelper.join(destinationPath, mp4name);
+
         var command = ffmpegCommand(aviPath)
           .videoCodec('libx264')
           .format('mp4')
+          .save(mp4name)
+          .outputOptions('-preset ultrafast')
+          .on('start', function(commandLine) {
+            console.log(commandLine);
+          })
+          .on('error', function(err) {
+            console.error('error:', err);
+          })
           .on('end', function(){
             console.log('converted to mp4.');
-            fs.rename(fullSavePath, mp4Path, function(err) {
+            fs.rename(mp4Path, fullSavePath, function(err) {
               if (err) {
                 console.log('error moving: ' + err);
               }
-              io.emit('success', {
-                msg: 'Video processing ...'
+              fs.unlink(aviPath, function(err) {
+                if (err) {
+                  console.log(err);
+                }
               });
             });
             counter++;
