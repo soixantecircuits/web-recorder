@@ -163,7 +163,7 @@ var stop = function() {
 }
 
 //ffmpeg -y -f x11grab -r 25 -s 1920x1080 -i :0.0 -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
-//fmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
+//ffmpeg -y -f avfoundation -pix_fmt nv12 -r 25 -video_device_index 0 -i "" -vcodec libx264 -preset ultrafast -threads 4 tint.mkv
 
 //ffmpeg -f x11grab -r 30 -s 1920x1080 -i :0.0+0,0 -vcodec libx264 -preset veryfast -crf 18 -acodec libmp3lame -ar 44100 -q:a 1 -pix_fmt yuv420p test2.mkv
 
@@ -184,12 +184,16 @@ var makeMovie = function() {
     .fps(fps)
     .videoCodec('libx264') //should try mpeg4
     // .duration(duration);
+    // .duration(5);
   if (inputOption[platform].length > 0) {
     movieRec.inputOption(inputOption[platform])
   }
   movieRec.outputOptions(outputOptions[platform])
     //.addInput('./soundtrack.mp3')
     .save(fullSavePath)
+    .on('start', function(commandLine) {
+      console.log('Spawned Ffmpeg with command: ' + commandLine);
+    })
     .on('end', function(data) {
       console.log('Finished processing: ', data);
       counter++;
